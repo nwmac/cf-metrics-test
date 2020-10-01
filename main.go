@@ -22,7 +22,7 @@ func main() {
 	for {
 
 		// 8MB block
-		block := make([]byte, 1024*1024*256)
+		block := make([]byte, 1024*1024*128)
 		blocks[mem] = block
 		done := make(chan int)
 
@@ -57,6 +57,7 @@ func main() {
 			mem = 1
 			blocks = make([][]byte, 32)
 			fmt.Println("Resetting ...")
+			runtime.GC()
 		}
 
 	}
