@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 )
@@ -11,6 +13,7 @@ func main() {
 
 	fmt.Println("CF Metrics Test")
 	fmt.Println("Running ...")
+	reportDiskUsage()
 
 	delay := 24
 	mem := 1
@@ -57,6 +60,9 @@ func main() {
 		time.Sleep(time.Second * 10)
 		close(done)
 
+		// Report disk usage
+		reportDiskUsage()
+
 		delay = delay - 1
 		if delay >= 0 {
 			mem = mem + 1
@@ -72,4 +78,39 @@ func main() {
 		}
 
 	}
+}
+
+func reportDiskUsage() {
+	size, err := dirSize(".")
+	if err == nil {
+		fmt.Printf("Disk usage: %s\n", byteCountSI(size))
+	}
+}
+
+func dirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
+}
+
+func byteCountSI(b int64) string {
+	const unit = 1000
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB",
+		float64(b)/float64(div), "kMGTPE"[exp])
 }
