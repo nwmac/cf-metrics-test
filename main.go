@@ -13,7 +13,7 @@ func main() {
 	//time.Sleep(time.Second * 10)
 	fmt.Println("Running ...")
 
-	delay := 20
+	delay := 32
 	cpus := 1
 	mem := 1
 
@@ -41,19 +41,19 @@ func main() {
 		time.Sleep(time.Second * 10)
 		close(done)
 
-		cpus = cpus + 1
-		mem = mem + 1
-
-		if mem > 32 {
-			mem = 1
-			blocks = make(map[int]interface{})
-
+		delay = delay - 1
+		if delay >= 0 {
+			cpus = cpus + 1
+			mem = mem + 1
 		}
 
-		delay = delay - 1
 		fmt.Println(delay)
-		if delay == -1 {
-			break
+		if delay == -5 {
+			delay = 32
+			cpus = 1
+			mem = 1
+			blocks = make(map[int]interface{})
+			fmt.Println("Resetting ...")
 		}
 
 	}
