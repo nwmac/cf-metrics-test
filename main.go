@@ -10,9 +10,6 @@ import (
 func main() {
 
 	fmt.Println("CF Metrics Test")
-	fmt.Println("Starting in 10 seconds ...")
-
-	//time.Sleep(time.Second * 10)
 	fmt.Println("Running ...")
 
 	delay := 24
@@ -30,9 +27,12 @@ func main() {
 
 		// Write a file
 		if doneFiles > 0 {
-			file, err := ioutil.TempFile("cf-metrics-test", "disk-test")
+			file, err := ioutil.TempFile("", "cf-metrics-test")
 			if err == nil {
 				file.Truncate(1e7)
+			} else {
+				fmt.Println("Error creating file")
+				fmt.Println(err)
 			}
 		}
 
