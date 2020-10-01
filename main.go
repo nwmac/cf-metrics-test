@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"runtime"
 	"time"
 )
@@ -16,6 +17,7 @@ func main() {
 
 	delay := 24
 	mem := 1
+	doneFiles := 50
 
 	blocks := make([][]byte, 32)
 
@@ -25,6 +27,14 @@ func main() {
 		block := make([]byte, 1024*1024*128)
 		blocks[mem] = block
 		done := make(chan int)
+
+		// Write a file
+		if doneFiles > 0 {
+			file, err := ioutil.TempFile("cf-metrics-test", "disk-test")
+			if err == nil {
+				file.Truncate(1e7)
+			}
+		}
 
 		for i := 0; i < 2; i++ {
 			go func(i int) {
