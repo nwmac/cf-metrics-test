@@ -27,9 +27,10 @@ func main() {
 
 		// Write a file
 		if doneFiles > 0 {
-			file, err := ioutil.TempFile("", "cf-metrics-test")
+			file, err := ioutil.TempFile(".", "cf-metrics-test")
 			if err == nil {
-				file.Truncate(1e7)
+				// fmt.Println(file.Name())
+				file.Truncate(1024 * 1024 * 10)
 			} else {
 				fmt.Println("Error creating file")
 				fmt.Println(err)
