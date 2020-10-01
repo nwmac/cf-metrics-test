@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 )
 
@@ -13,22 +14,26 @@ func main() {
 	//time.Sleep(time.Second * 10)
 	fmt.Println("Running ...")
 
-	delay := 32
-	cpus := 1
+	delay := 24
 	mem := 1
 
-	blocks := make(map[int]interface{})
+	blocks := make([][]byte, 32)
 
 	for {
 
 		// 8MB block
-		block := make([]byte, mem*1024*1024*64)
+		block := make([]byte, 1024*1024*256)
 		blocks[mem] = block
 		done := make(chan int)
 
-		for i := 0; i < cpus; i++ {
+		for i := 0; i < runtime.NumCPU(); i++ {
 			go func(i int) {
 				for {
+					d := delay
+					if d < 4 {
+						d = 4
+					}
+					time.Sleep(time.Millisecond * time.Duration((d+10)/10))
 					select {
 					case <-done:
 						return
@@ -38,26 +43,21 @@ func main() {
 			}(i)
 		}
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 2)
 		close(done)
 
 		delay = delay - 1
 		if delay >= 0 {
-			cpus = cpus + 1
 			mem = mem + 1
 		}
 
 		fmt.Println(delay)
-		if delay == -5 {
-			delay = 32
-			cpus = 1
+		if delay == -6 {
+			delay = 24
 			mem = 1
-			blocks = make(map[int]interface{})
+			blocks = make([][]byte, 32)
 			fmt.Println("Resetting ...")
 		}
 
 	}
-
-	fmt.Println("CF Metrics Test finished")
-
 }
