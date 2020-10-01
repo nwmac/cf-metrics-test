@@ -1,0 +1,7 @@
+---
+applications:
+- name: cf-metrics-test
+  memory: 256MB
+  disk_quota: 512MB
+  no-route: true
+  health-check-type: process
